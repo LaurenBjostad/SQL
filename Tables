@@ -1,0 +1,80 @@
+CREATE TABLE SHOP (
+  shop_id INT,
+  shop_name VARCHAR(50),
+  city VARCHAR(50),
+  state CHAR(2),
+PRIMARY KEY (shop_id)
+);
+
+CREATE TABLE STAFF (
+  staff_id INT,
+  first_name VARCHAR(30),
+  last_name VARCHAR(30),
+  hire_date DATE,
+  title VARCHAR(30),
+  shop_id INT,
+Primary Key (staff_id),
+Foreign Key (shop_id) references SHOP(shop_id)
+);
+
+CREATE TABLE SUPPLIER (
+  supplier_id INT,
+  company_name VARCHAR(50),
+  country VARCHAR(30),
+  sales_contact_name VARCHAR(60),
+  email VARCHAR(50) NOT NULL,
+Primary Key (supplier_id)
+);
+
+CREATE TABLE JAVA (
+  java_id INT,
+  shop_id INT,
+  supplier_id INT,
+  java_name VARCHAR(30),
+  price_per_pound NUMERIC(5,2),
+PRIMARY KEY (java_id),
+FOREIGN KEY (shop_id) references SHOP(shop_id),
+FOREIGN KEY (supplier_id) references SUPPLIER(supplier_id)
+);
+
+INSERT INTO SHOP
+VALUES (4707, 'Jittery Java', 'Shoreline', 'WA'),
+  (8563, 'No Doze Café', 'Oak Harbor', 'WA'),
+  (4006, 'The Split Bean', 'Salem', 'OR'),
+  (8944, 'Brewed Awakening', 'Seattle', 'WA');
+
+INSERT INTO STAFF
+VALUES (89924, 'Maddie', 'Griffin', '2018-02-13', 'Barista', 4707),
+  (11234, 'Skye', 'Fenton', '2009-05-25', 'Manager', 8563),
+  (48358, 'Caden', 'Clay', '2015-08-10', 'Shift Lead', 4006),
+  (94612, 'Douglas', 'Carter', '2021-11-08', 'Barista', 8944);
+
+INSERT INTO SUPPLIER
+VALUES (71490, 'Common Coffee Co.', 'Ethiopia', 'Sarah Dunkin', 'sarah@commoncoffee.com'),
+  (12494, 'Brew Culture Coffee', 'Brazil', 'Katie Smith', 'Katie@brewculture.com'),
+  (27153, 'Cuppa Coffee', 'Columbia', 'Brad Jones', 'brad@cuppacoffee.com');
+
+INSERT INTO JAVA
+VALUES (124, 4707, 71490, 'Ethiopia Light Roast', 11.99),
+  (240, 8563, 12494, 'Hair Bender', 12.99),
+  (876, 4006, 27153, 'Death Wish', 21.99),
+  (441, 8944, 71490, 'Venice Medium Roast', 11.99);
+  
+  -- Viewing the staff information for the shops
+  
+Select staff_id, CONCAT(first_name, ' ', last_name) as staff_full_name, hire_date, title, shop_id
+From STAFF;
+
+-- Looking at all Java priced less than 12.99 per pound
+
+Select *
+From JAVA
+Where price_per_pound < 12.99;
+
+-- Shows the Java each shop is carrying as well as the country of origin for the Java
+
+Select SHOP.shop_name, JAVA.java_name, SUPPLIER.country
+From SHOP
+JOIN JAVA on SHOP.shop_id = JAVA.shop_id
+JOIN SUPPLIER on JAVA.supplier_id = SUPPLIER.supplier_id
+Order BY shop_name;
