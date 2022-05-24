@@ -1,0 +1,34 @@
+Select countryinformation.Location, coviddeaths.date, coviddeaths.Total_cases, coviddeaths.new_cases, coviddeaths.total_deaths, countryinformation.population
+From portfolioproject.coviddeaths
+Join countryinformation on countryinformation.iso_code = coviddeaths.iso_code
+order by 2;
+
+-- looking at Total Cases VS Total Deaths
+-- shows likelihood of dying from Covid in the United States
+
+Select countryinformation.Location, coviddeaths.date, coviddeaths.Total_cases, (coviddeaths.total_deaths/coviddeaths.Total_cases)*100 as DeathPercentage
+From portfolioproject.coviddeaths
+Join countryinformation on countryinformation.iso_code = coviddeaths.iso_code
+order by 2
+
+-- Looking at Total Cases VS Population
+-- Shows what pertcentage of the United States Population got covid
+
+Select countryinformation.Location, coviddeaths.date, countryinformation.population, coviddeaths.Total_cases,  (coviddeaths.Total_cases/countryinformation.population)*100 as Percentofpopulationinfected
+From portfolioproject.coviddeaths
+Join countryinformation on countryinformation.iso_code = coviddeaths.iso_code
+order by 2
+
+-- Looking at Total Population vs Vaccinations
+
+With PopvsVac (Location, Date, Population, new_vaccinations, RollingPeopleVaccinated)
+as
+(
+Select Countryinformation.Location, coviddeaths.date, countryinformation.population, covidvaccinations.new_vaccinations, Sum(covidvaccinations.new_vaccinations) as RollingPeopleVaccinated
+From portfolioproject.coviddeaths
+Join countryinformation on countryinformation.iso_code = coviddeaths.iso_code
+Join covidvaccinations on covidvaccinations.date = coviddeaths.date
+-- order by 2,3
+)
+Select *, (rollingpeoplevaccinated/Population)*100
+From PopvsVac
